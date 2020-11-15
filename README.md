@@ -1,3 +1,3 @@
 # pygamegame
 use arrow keys or wasd to control ships
-use shift to fire
+use right and left shift to fire
