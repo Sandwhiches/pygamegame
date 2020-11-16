@@ -9,40 +9,45 @@ pygame.init()
 # pygame.mixer.init()
 
 
-
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption('Planes')
 
+# setting clock
+clock = pygame.time.Clock()
 
-# clock = pygame.time.Clock()
+# colors:
+colors = cycle(((0, 255, 0), (10, 255, 0), (20, 255, 0), (30, 255, 0), (40, 255, 0), (50, 255, 0), (60, 255, 0), (70, 255, 0), (80, 255, 0), (90, 255, 0), (100, 255, 0), (110, 255, 0), (120, 255, 0), (130, 255, 0), (140, 255, 0), (150, 255, 0), (160, 255, 0), (170, 255, 0), (180, 255, 0), (190, 255, 0), (200, 255, 0), (210, 255, 
+0), (220, 255, 0), (230, 255, 0), (240, 255, 0), (250, 255, 0), (255, 255, 0), (255, 245, 0), (255, 235, 0), (255, 225, 0), (255, 215, 0), (255, 205, 0), (255, 195, 0), (255, 185, 0), (255, 175, 0), (255, 165, 0), (255, 155, 0), (255, 145, 0), (255, 135, 0), (255, 125, 0), (255, 115, 0), (255, 105, 0), (255, 95, 0), (255, 85, 0), (255, 75, 0), (255, 65, 0), (255, 55, 0), (255, 45, 0), (255, 35, 0), (255, 25, 0), (255, 15, 0), (255, 5, 0), (255, 0, 0), (255, 0, 10), (255, 0, 20), (255, 0, 30), (255, 0, 40), (255, 0, 50), (255, 0, 60), (255, 0, 70), (255, 0, 80), (255, 0, 90), (255, 0, 100), (255, 0, 110), (255, 0, 120), (255, 0, 130), (255, 0, 140), (255, 0, 150), (255, 0, 160), (255, 0, 170), (255, 0, 180), (255, 0, 190), (255, 0, 200), (255, 0, 210), (255, 0, 220), (255, 0, 230), (255, 0, 240), (255, 0, 250), (255, 0, 255), (245, 0, 255), (235, 0, 255), (225, 0, 255), (215, 0, 255), (205, 0, 255), (195, 0, 255), (185, 0, 255), (175, 
+0, 255), (165, 0, 255), (155, 0, 255), (145, 0, 255), (135, 0, 255), (125, 0, 255), (115, 0, 255), (105, 0, 255), (95, 0, 255), (85, 0, 255), (75, 0, 255), (65, 0, 255), (55, 0, 255), (45, 0, 255), (35, 0, 255), (25, 0, 255), (15, 0, 255), (5, 0, 255), (0, 0, 255), (0, 10, 255), (0, 20, 255), (0, 30, 255), (0, 40, 
+255), (0, 50, 255), (0, 60, 255), (0, 70, 255), (0, 80, 255), (0, 90, 255), (0, 100, 255), (0, 110, 255), (0, 120, 255), (0, 130, 255), (0, 140, 255), (0, 150, 255), (0, 160, 255), (0, 170, 255), (0, 180, 255), (0, 190, 255), (0, 200, 255), (0, 210, 255), (0, 220, 255), (0, 230, 255), (0, 240, 255), (0, 250, 255)))
 
+# game configurations
+straight = True
+randomy = False
+eavoid = False
+oavoid = False
+b_avoid = False
+b_follow = False
+pfollow = False
+efollow = False
+wallhax = False
+yreflect = False
+xreflect = False
+deflect = False
+phase = False
+lines = True
+short = True
+drawobj = True
+portal = False
+xval = False
 
 class gameobject():
-
-	def __init__(self, image, sx, sy, x, y, boundary, reverse):
-
-		self.image = pygame.transform.scale(pygame.image.load(image), (sx, sy))
+	def __init__(self, image, x, y, reverse):
+		self.image = image
 		self.ox = x
 		self.oy = y
 		self.x = x
 		self.y = y
-		self.bx1 = boundary[0][0]
-		self.bx2 = boundary[0][1]
-		self.by1 = boundary[1][0]
-		self.by2 = boundary[1][1]	
-		self.straight = True
-		self.random = False
-		self.eavoid = False
-		self.oavoid = False
-		self.b_avoid = False
-		self.b_follow = False
-		self.pfollow = False
-		self.efollow = False
-		self.wallhax = False
-		self.yreflect = False
-		self.xreflect = False
-		self.deflect = False
-		self.phase = False
 		self.ded = False
 		self.orientation = reverse
 		self.reverse = reverse
@@ -54,32 +59,31 @@ class gameobject():
 		else:
 			self.reverse = True
 
-
 	def setpos(self, choose, diff):
 		if choose == 0:
 			if diff < 0:
-				if int(self.x) == self.bx1:
+				if int(self.x) <= bx1:
 					return
 			else:
-				if int(self.x) == self.bx2:
+				if int(self.x) >= bx2:
 					return
 			self.x += diff
 
 		else:
 			if diff < 0:
-				if int(self.y) == self.by1:
+				if int(self.y) <= by1:
 					return
 			else:
-				if int(self.y) == self.by2:
+				if int(self.y) >= by2:
 					return
 			if int(self.y) == 300:
 				self.rotate180()
 			self.y += diff
 
 	def updategame(self ):
-		if self.ded == False:
+		if self.ded == False and drawobj:
 			screen.blit(self.image, (self.x, self.y))
-		else:
+		elif drawobj and self.ded:
 			if self.reverse != self.orientation:
 				self.rotate180()
 			self.ded = False
@@ -87,17 +91,14 @@ class gameobject():
 
 # class bulletobject
 class bulletobject():
-	def __init__(self, image, sx, sy, b_range, enemy, origin, bulletspeed):
-		self.image = pygame.transform.scale(pygame.image.load(image), (sx, sy))
-		self.xr = b_range[1]
-		self.yr = b_range[0]
+	def __init__(self, image, enemy, origin, bulletspeed):
+		self.image = image
 		self.x = 0
 		self.y = 0
 		self.enemy = enemy
 		self.origin = origin
-		self.sbulletspeed = bulletspeed
 		self.bulletspeed = bulletspeed
-		self.xbulletspeed = -bulletspeed
+		self.xbulletspeed = bulletspeed
 		self.ready = False
 
 
@@ -106,81 +107,80 @@ class bulletobject():
 		odistance = math.sqrt((math.pow(self.x - self.origin.x, 2)) + (math.pow(self.y - self.origin.y, 2)))
 		# distance to enemy
 		edistance = math.sqrt((math.pow(self.x - self.enemy.x, 2)) + (math.pow(self.y - self.enemy.y, 2)))
+		# distance travelled by a bullet in one frame plus 40
+		dist = (changesign(0, self.bulletspeed) + 70)*delta
 
-		if self.origin.b_avoid or self.origin.b_follow or self.origin.deflect:
+		if len(ready) > 1 and (b_avoid or b_follow or deflect or lines):
 			# distance to next bullet
-			liveb1 = [(i.x, i.y) for i in ready ]
+			liveb1 = [(i.x , i.y) for i in ready if i != self]
 			liveb2 = [math.sqrt((math.pow(self.x - i[0], 2)) + (math.pow(self.y - i[1], 2))) for i in liveb1]
-			for i, j in zip(liveb1, liveb2):
-				if j == 0:
-					continue
-				if self.origin.b_avoid:
-				# avoiding other bullets
-					if j <= 25:
-						if self.x >= i[0]:
-							self.x += 1 + round(random.random()*3, 2)
-						else:
-							self.x -= 1 - round(random.random()*3, 2)
-						if self.y >= i[1]:
-							self.y += 1 + round(random.random()*3, 2)
-						else:
-							self.y -= 1 - round(random.random()*3, 2)
 
-				if self.origin.b_follow:
-				# bullets follow other bullets
-					if j <= 18:
-						if self.x >= i[0]:
-							self.x -= 1
-						else:
-							self.x += 1
-						if self.y >= i[1]:
-							self.y -= 1
-						else:
-							self.y += 1
-				if self.origin.deflect:
-					if j <= 25:
-						if self.x < i[0]:
-							if self.bulletspeed > 0:
-								self.xbulletspeed = -self.xbulletspeed
-						else:
-							if self.xbulletspeed < 0:
-								self.xbulletspeed = -self.xbulletspeed
-						if self.y < i[1]:
-							if self.bulletspeed > 0:
-								self.bulletspeed = -self.bulletspeed
-						else:
-							if self.bulletspeed < 0:
-								self.bulletspeed = -self.bulletspeed
+			if lines and short:
+			# draws line btw closest bullet
+				liveb3 = {i:j for i, j in zip(liveb2, liveb1)}
+				x, y = liveb3[min(liveb2)]
+				pygame.draw.line(screen, color, (self.x + 12.5, self.y + 12.5), (x + 12.5, y + 12.5))
 
-		if self.origin.wallhax:
-			# wall avoiding behavior
-			if (self.x) - 4 <= self.xr[0]:
-				self.x += 4
-			elif (self.x) + 4 >= self.xr[1]:
-				self.x -= 4
-			if (self.y) - 4 <= self.yr[0]:
-				self.y += 4
-			elif (self.y) + 4 >= self.yr[1] :
-				self.y -= 4
 
-		if self.origin.yreflect:
+			if b_avoid or b_follow or deflect or (lines and not short):
+				for i, j in zip(liveb1, liveb2):
+					if lines and not short:
+						pygame.draw.line(screen, color, (self.x + 12.5, self.y + 12.5), (i[0] + 12.5, i[1] + 12.5))
+					if b_avoid:
+					# avoiding other bullets
+						if j <= 25:
+							if self.x >= i[0]:
+								self.x += dist
+							else:
+								self.x -= dist
+							if self.y >= i[1]:
+								self.y += dist
+							else:
+								self.y -= dist
+					if b_follow:
+					# bullets follow other bullets
+						if j <= 18:
+							if self.x >= i[0]:
+								self.x -= dist
+							else:
+								self.x += dist
+							if self.y >= i[1]:
+								self.y -= dist
+							else:
+								self.y += dist
+					if deflect:
+						if j <= 25:
+							if self.x < i[0]:
+								if self.bulletspeed > 0:
+									self.xbulletspeed = -self.xbulletspeed
+							else:
+								if self.xbulletspeed < 0:
+									self.xbulletspeed = -self.xbulletspeed
+							if self.y < i[1]:
+								if self.bulletspeed > 0:
+									self.bulletspeed = -self.bulletspeed
+							else:
+								if self.bulletspeed < 0:
+									self.bulletspeed = -self.bulletspeed
+
+		if yreflect:
 			# bullets reflect at y boundary
-			if self.y - 5 <= self.yr[0]:
+			if self.y - 5 <= yr[0]:
 				self.bulletspeed = -self.bulletspeed
-			elif self.y + 5 >= self.yr[1] :
+			elif self.y + 5 >= yr[1] :
 				self.bulletspeed = -self.bulletspeed
 
-		if self.origin.xreflect:
+		if xreflect:
 			# bullets reflect at x boundary
-			if self.x - 5 <= self.xr[0]:
+			if self.x - 5 <= xr[0]:
 				self.xbulletspeed = -self.xbulletspeed
-			elif self.x + 5 >= self.xr[1]:
+			elif self.x + 5 >= xr[1]:
 				self.xbulletspeed = -self.xbulletspeed
 
-		if self.origin.eavoid:
+		if eavoid:
 			# enemy avoiding behavior
 			if edistance <= 50:
-				if self.origin.deflect:
+				if deflect:
 					# delfects outside enemy barrier
 					if self.x < self.enemy.x:
 						if self.bulletspeed > 0:
@@ -196,18 +196,18 @@ class bulletobject():
 							self.bulletspeed = -self.bulletspeed
 
 				if self.x >= self.enemy.x:
-					self.x += 1
+					self.x += dist
 				else:
-					self.x -= 1
+					self.x -= dist
 				if self.y >= self.enemy.y:
-					self.y += 1
+					self.y += dist
 				else:
-					self.y -= 1
+					self.y -= dist
 
-		if self.origin.oavoid:
+		if oavoid:
 			# origin avoiding behavior
 			if odistance < 50:
-				if self.origin.deflect:
+				if deflect or xreflect or yreflect:
 					# delfects outside barrier
 					if self.x < self.origin.x:
 						if self.bulletspeed > 0:
@@ -223,73 +223,77 @@ class bulletobject():
 							self.bulletspeed = -self.bulletspeed
 
 				if self.x >= self.origin.x:
-					self.x += 1
+					self.x += dist
 				else:
-					self.x -= 1
+					self.x -= dist
 				if self.y >= self.origin.y:
-					self.y += 1
+					self.y += dist
 				else:
-					self.y -= 1
+					self.y -= dist
 
-		if self.origin.efollow:
+		if efollow:
 			# enemy following behavior
 			if edistance >= 90:
-				if self.origin.deflect:
+				if deflect or xreflect or yreflect:
 					# delfects within barrier
-					if self.x >= self.enemy.x and self.xbulletspeed < 0:
-						self.x += 1
+					if self.x > self.enemy.x and self.xbulletspeed > 0:
 						self.xbulletspeed = -self.xbulletspeed
-					elif self.x <= self.enemy.x and self.xbulletspeed > 0:
-						self.x -= 1
+					elif self.x < self.enemy.x and self.xbulletspeed < 0:
 						self.xbulletspeed = -self.xbulletspeed
-					if self.y >= self.enemy.y and self.bulletspeed < 0:
-						self.y -= 1
+					if self.y > self.enemy.y and self.bulletspeed > 0:
 						self.bulletspeed = -self.bulletspeed
-					elif self.y <= self.enemy.y and self.bulletspeed > 0:
-						self.y += 1	
+					elif self.y < self.enemy.y and self.bulletspeed < 0:
 						self.bulletspeed = -self.bulletspeed
 			
-				if self.x >= self.enemy.x:
-					self.x -= 1
-				else:
-					self.x += 1
-				if self.y >= self.enemy.y:
-					self.y -= 1
-				else:
-					self.y += 1
+				if self.x > self.enemy.x:
+					self.x -= dist
+				elif self.enemy.x < self.x:
+					self.x += dist
+				if self.y > self.enemy.y:
+					self.y -= dist
+				elif self.enemy.y < self.y:
+					self.y += dist
 
-		if self.origin.pfollow:
+		if pfollow:
 			# player following behavior
 			if odistance >= 90:
-				if self.origin.deflect:
+				if deflect or xreflect or yreflect:
 					# deflects within barrier
-					if self.x >= self.origin.x and self.xbulletspeed > 0:
-						self.x -= 1
+					if self.x > self.origin.x and self.xbulletspeed > 0:
 						self.xbulletspeed = -self.xbulletspeed
-					elif self.x <= self.origin.x and self.xbulletspeed < 0:
-						self.x += 1
+					elif self.x < self.origin.x and self.xbulletspeed < 0:
 						self.xbulletspeed = -self.xbulletspeed
-					if self.y >= self.origin.y and self.bulletspeed > 0:
-						self.y -= 1
+					if self.y > self.origin.y and self.bulletspeed > 0:
 						self.bulletspeed = -self.bulletspeed
-					elif self.y <= self.origin.y and self.bulletspeed < 0:
-						self.y += 1	
+					elif self.y < self.origin.y and self.bulletspeed < 0:
 						self.bulletspeed = -self.bulletspeed
+				if self.x > self.origin.x:		
+					self.x -= dist
+				elif self.x < self.origin.x:
+					self.x += dist
+				if self.y > self.origin.y:
+					self.y -= dist
+				elif self.y < self.origin.y:
+					self.y += dist
+		if wallhax:
+			# prevents bullets going past edge
+			if self.y <= yr[0] - 3 or self.y >= yr[1] + 3:
+				if self.y <= yr[0] - 3:
+					self.y += dist + 3
+				else:
+					self.y -= dist + 3
+			elif self.x <= xr[0] - 3 or self.x >= xr[1] + 3:
+				if self.x <= xr[0] - 3:
+					self.x += dist + 3
+				else:
+					self.x -= dist + 3
 
-				if self.x >= self.origin.x:		
-					self.x -= 1
-				else:
-					self.x += 1
-				if self.y >= self.origin.y:
-					self.y -= 1
-				else:
-					self.y += 1
-		# deletes bullet and ship
-		if self.origin.phase == False: 
+		
+		if phase == False: 
+			# deletes bullet and ship
 			if edistance <= 10:
 				self.ready = False
 				self.enemy.ded = True
-				self.bulletspeed = self.sbulletspeed
 				score()
 				ready.remove(self)
 
@@ -299,96 +303,78 @@ class bulletobject():
 		self.ready = True
 
 	def fire(self):
-		if self.y <= self.yr[0] or self.y >= self.yr[1]:
-			self.ready = False
-			self.bulletspeed = self.sbulletspeed
-			ready.remove(self)
-		elif self.x <= self.xr[0] or self.x >= self.xr[1]:
-			self.ready = False
-			self.bulletspeed = self.sbulletspeed
-			ready.remove(self)
-		screen.blit( self.image, (self.x, self.y))
+		if portal:
+			# moves to opposite edge
+			if self.y <= dy[0] or self.y >= dy[1]:
+				if self.y <= dy[0]:
+					self.y = dy[1]
+				else:
+					self.y = dy[0]
+			elif self.x <= dx[0] or self.x >= dx[1]:
+				if self.x <= dx[0]:
+					self.x = dx[1]
+				else:
+					self.x = dx[0]
+		else:
+			# deletes bullet at edges
+			if self.y <= dy[0] or self.y >= dy[1]:
+				self.ready = False
+				ready.remove(self)
+			elif self.x <= dx[0] or self.x >= dx[1]:
+				self.ready = False
+				ready.remove(self)
 
-		if self.origin.straight:
+		if straight:
 			# staight line
-			self.y += self.bulletspeed
-			if self.origin.xreflect:
+			self.y += self.bulletspeed*delta
+			if xreflect or xval:
 				# just to see how it would move
 				# self.x += changesign((self.xbulletspeed + math.sqrt((math.pow(self.bulletspeed, 2)))), checksign(self.xbulletspeed))
-				self.x += self.xbulletspeed
-
-		if self.origin.random:
-			# random
+				self.x += self.xbulletspeed*delta
+		if randomy:
+			# random direction
 			self.x = random.randint(- 3, 3) + self.x
 			self.y = random.randint(- 3, 3) + self.y
 
 		self.collisioncheck()
 
+		if drawobj:
+			screen.blit( self.image, (self.x, self.y))
+
+
+
+
+# setting parameters for both ships
+bx1 = 0
+bx2 = 775
+by1 = 0
+by2 = 575
+
+yellow = pygame.transform.scale(pygame.image.load('paper-plane.png'), (25, 25))
+purple = pygame.transform.scale(pygame.image.load('paper-plane - Copy.png'), (25, 25))
+
 # plane
-player = gameobject('paper-plane.png', 25, 25, 375, 485, ((0, 775), (0, 575)), True)
+player = gameobject(yellow, 375, 485, True)
 # enemy plane
-enemy = gameobject('paper-plane - Copy.png', 25, 25, 375, 115, ((0, 775), (0, 575)), False)
+enemy = gameobject(purple, 375, 115, False)
 
 
 
-im2 = 'rec.png'
-im1 = 'rec - Copy.png'
-
+# setting parameters for all bullets going to be created
 sx = 25
 sy = 25
 
-xr = (0, 585)
-yr = (0, 785)
+im2 = pygame.transform.scale(pygame.image.load('rec.png'), (sx, sy))
 
-bs = .5 
-# bullet
-b1 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b2 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b3 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b4 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b5 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b6 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b7 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b8 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b9 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b10 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b11 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b12 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b10 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b11 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b12 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b13 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b14 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-b15 = bulletobject(im1,sx, sy, b_range = (xr, yr), enemy = enemy, origin = player, bulletspeed = -bs)
-mag = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15]
-magazine = cycle([b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15])
+im1 = pygame.transform.scale(pygame.image.load('rec - Copy.png'), (sx, sy))
+xr = (0, 775)
+yr = (0, 575)
+dx = (-30, 815)
+dy = (-30, 615)
 
-eb1 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb2 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb3 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb4 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb5 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb6 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb7 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb8 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb9 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb10 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb11 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb12 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb10 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb11 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb12 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb13 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb14 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-eb15 = bulletobject(im2,sx, sy, b_range = (xr, yr), enemy = player, origin = enemy, bulletspeed = bs)
-emag = [eb1, eb2, eb3, eb4, eb5, eb6, eb7, eb8, eb9, eb10, eb11, eb12, eb13, eb14, eb15]
-emagazine = cycle([eb1, eb2, eb3, eb4, eb5, eb6, eb7, eb8, eb9, eb10, eb11, eb12, eb13, eb14, eb15])
+bs = 150
 
-
-
-
-
-
+# formatting configuration menu
 def multlines(text, configs, fontsize):
 	text = text.replace('True', 'ON').replace('False', 'OFF').splitlines()
 	for i, j in enumerate(text):
@@ -403,7 +389,7 @@ def update():
 		# drawing backround
 		screen.fill((30, 20, 30))
 
-	# draws scoreboard, configs
+	# # draws scoreboard, configs
 	if scoreswitch:
 		stat = status.render(f'                           YELLOW: {ppoint}   PURPLE: {epoint}', True, (255 , 50, 225))
 		screen.blit( stat, (0, 0))
@@ -418,6 +404,7 @@ def update():
 	# creates frame in window
 	pygame.display.update()
 
+# updates scoreboard
 def score():
 	global ppoint, epoint
 	if player.ded == True:
@@ -425,6 +412,7 @@ def score():
 	else:
 		ppoint += 1
 
+# makes sure an integer is negative or positive
 def changesign(check, val):
 	if check:
 		if val < 0:
@@ -453,7 +441,7 @@ configuration = True
 sound = False
 ready = []
 
-# point
+# points
 ppoint = 0
 epoint = 0
 
@@ -461,239 +449,181 @@ run = True
 epress = True
 ppress = True
 configcheck = True
+count = 1
 while run:
 	# returns each event in keyboard
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
 			continue
-
+		
+	# updating delta value and setting frame rate
+	delta = clock.tick(60)/1000
 	# updating game configs 
-	text = f'[1]straight: {player.straight}\n[2]random: {player.random}\n[3]enemyavoid: {player.eavoid}\n[4]playeravoid: {player.oavoid}\n[5]bulletavoid: {player.b_avoid}\n[6]bulletfollow: {player.b_follow}\n[7]enemyfollow: {player.efollow}\n[8]playerfollow: {player.pfollow}\n[9]wallborder {player.wallhax}\n[0]yreflect: {player.yreflect}\n[F1]xreflect: {player.xreflect}\n[F2]deflectbullets: {player.deflect}\n[F3]phasebullets: {player.phase}\n[F4]updatesc: {pyupdate}\n[F5]scoreboard: {scoreswitch}\n[F6]configs: {configuration}\n[F7]soundeffect: {sound}\n[F8]exit game\n[F9/F10]bulletspd: {round(b1.sbulletspeed, 1)}pix/frm'
-	
+	text = f'[1]/[x]x, straight: {xval}, {straight}\n[2]random: {randomy}\n[3]enemyavoid: {eavoid}\n[4]playersavoid: {oavoid}\n[5]bulletavoid: {b_avoid}\n[6]bulletfollow: {b_follow}\n[7]enemyfollow: {efollow}\n[8]playerfollow: {pfollow}\n[9]wallborder {wallhax}\n[0]yreflect: {yreflect}\n[F1]xreflect: {xreflect}\n[F2]deflectbullets: {deflect}\n[F3]phasebullets: {phase}\n[F4]/[i]short, lines: {short} {lines}\n[F5]drawobjs: {drawobj}\n[F6]portal: {portal}\n[F7]updatesc: {pyupdate}\n[F8]scoreboard: {scoreswitch}\n[F9]configs: {configuration}\n[F10]soundeffect: {sound}\n[\]exit\n[-]/[+]bulletspd: {round(bs, 1)}\nfps: {round(clock.get_fps(), 2)}, delta: {delta}\nx, y : {int(player.x)}, {int(player.y)}\nlivebullets: {len(ready)}\n'
+	# updating color
+	if count % 2 == 0:
+		color = next(colors)
+	count += 1
 	# controlling ships
 	keys = pygame.key.get_pressed()
 
+	# allows keypresses 1 - K12 to change game settings
 	if configcheck:
-		if keys[pygame.K_1]:
-			if player.straight:
-				player.straight = False
-				enemy.straight = False
-			else:
-				player.straight = True
-				enemy.straight = True
+		if keys[pygame.K_x]:
+			xval = not xval
+			configcheck = False
+
+		elif keys[pygame.K_i]:
+			short = not short
+			configcheck = False
+
+		elif keys[pygame.K_1]:
+			straight = not straight
 			configcheck = False
 
 		elif keys[pygame.K_2]:
-			if player.random:
-				player.random = False
-				enemy.random = False
-			else:
-				player.random = True
-				enemy.random = True
+			randomy = not randomy
 			configcheck = False
 
 		elif keys[pygame.K_3]:
-			if player.eavoid:
-				player.eavoid = False
-				enemy.eavoid = False
-			else:
-				player.eavoid = True
-				enemy.eavoid = True
+			eavoid = not eavoid
 			configcheck = False
 
 		elif keys[pygame.K_4]:
-			if player.oavoid:
-				player.oavoid = False
-				enemy.oavoid = False
-			else:
-				player.oavoid = True
-				enemy.oavoid = True
+			oavoid = not oavoid
 			configcheck = False
 
 		elif  keys[pygame.K_5]:
-			if player.b_avoid:
-				player.b_avoid = False
-				enemy.b_avoid = False
-			else:
-				player.b_avoid = True
-				enemy.b_avoid = True
+			b_avoid = not b_avoid
 			configcheck = False
 
 		elif  keys[pygame.K_6]:
-			if player.b_follow:
-				player.b_follow = False
-				enemy.b_follow = False
-			else:
-				player.b_follow = True
-				enemy.b_follow = True
+			b_follow = not b_follow
 			configcheck = False
 
 		elif keys[pygame.K_7]:
-			if player.efollow:
-				player.efollow = False
-				enemy.efollow = False
-			else:
-				player.efollow = True
-				enemy.efollow = True
+			efollow = not efollow
 			configcheck = False
 
 		elif keys[pygame.K_8]:
-			if player.pfollow:
-				player.pfollow = False
-				enemy.pfollow = False
-			else:
-				player.pfollow = True
-				enemy.pfollow = True
+			pfollow = not pfollow
 			configcheck = False
 
 		elif keys[pygame.K_9]:
-			if player.wallhax:
-				player.wallhax = False
-				enemy.wallhax = False
-			else:
-				player.wallhax = True
-				enemy.wallhax = True
+			wallhax = not wallhax
 			configcheck = False
 
 		elif keys[pygame.K_0]:
-			if player.yreflect:
-				player.yreflect = False
-				enemy.yreflect = False
-			else:
-				player.yreflect = True
-				enemy.yreflect = True
+			yreflect = not yreflect
 			configcheck = False	
 
 		elif keys[pygame.K_F1]:
-			if player.xreflect:
-				player.xreflect = False
-				enemy.xreflect = False
-			else:
-				player.xreflect = True
-				enemy.xreflect = True
+			xreflect = not xreflect
 			configcheck = False	
 		
 		elif keys[pygame.K_F2]:
-			if player.deflect:
-				player.deflect = False
-				enemy.deflect = False
-			else:
-				player.deflect = True
-				enemy.deflect = True
+			deflect = not deflect
 			configcheck = False
 
 		elif keys[pygame.K_F3]:
-			if player.phase:
-				player.phase = False
-				enemy.phase = False
-			else:
-				player.phase = True
-				enemy.phase = True
+			phase = not phase
 			configcheck = False	
 
 		elif keys[pygame.K_F4]:
-			if pyupdate:
-				pyupdate = False
-			else:
-				pyupdate = True
+			lines = not lines
 			configcheck = False
 
 		elif keys[pygame.K_F5]:
-			if scoreswitch:
-				scoreswitch = False
-			else:
-				scoreswitch = True	
+			drawobj = not drawobj
 			configcheck = False
 	
 		elif keys[pygame.K_F6]:
-			if configuration:
-				configuration = False
-			else:
-				configuration = True	
+			portal = not portal
 			configcheck = False
 		
 		elif keys[pygame.K_F7]:
-			if sound == False:
-				sound = True
-			else:
-				sound = False
-
+			pyupdate = not pyupdate
 			configcheck = False
 		
 		elif keys[pygame.K_F8]:
+			scoreswitch = not scoreswitch
+			configcheck = False
+
+		elif keys[pygame.K_F9]:
+			configuration =  not configuration
+			configcheck = False
+
+		elif keys[pygame.K_F10]:
+			sound = not sound
+			configcheck = False
+		
+		elif keys[pygame.K_MINUS]:
+			bs -= 1
+			configcheck = False
+
+		elif keys[pygame.K_EQUALS]:
+			bs += 1
+			configcheck = False
+
+		elif keys[pygame.K_BACKSLASH]:
 			run = False
 			continue
 
-		elif keys[pygame.K_F9]:
-			for i, j in zip(mag, emag):
-				i.bulletspeed -= .1
-				j.bulletspeed += .1
-				i.sbulletspeed -= .1
-				j.sbulletspeed += .1
-			configcheck = False
-		elif keys[pygame.K_F10]:
-			for i, j in zip(mag, emag):
-				i.bulletspeed += .1
-				j.bulletspeed -= .1
-				i.sbulletspeed += .1
-				j.sbulletspeed -= .1
-			configcheck = False
 
-	
+	# enemy ship - WASD, player ship - arrow keys
 	if  keys[pygame.K_w]:
-		enemy.setpos(1, -.3)
+		enemy.setpos(1, -150*delta)
 
 	if keys[pygame.K_a]:
-		enemy.setpos(0, -.3)
+		enemy.setpos(0, -150*delta)
 
 	if keys[pygame.K_s]:
-		enemy.setpos(1, .3)
+		enemy.setpos(1, 150*delta)
 
 	if keys[pygame.K_d]:
-		enemy.setpos(0, .3)
+		enemy.setpos(0, 150*delta)
 
 	if  keys[pygame.K_UP]:
-		player.setpos(1, -.3)
+		player.setpos(1, -150*delta)
 
 	if keys[pygame.K_LEFT]:
-		player.setpos(0, -.3)
+		player.setpos(0, -150*delta)
 
 	if keys[pygame.K_DOWN]:
-		player.setpos(1, .3)
+		player.setpos(1, 150*delta)
 
 	if keys[pygame.K_RIGHT]:
-		player.setpos(0, .3)
+		player.setpos(0, 150*delta)
 
-	# controlling bullets
+	# controlling bullets: enemy ship - LEFT SHIFT, player ship - RIGHT SHIFT
 	if keys[pygame.K_RSHIFT] and ppress == True:
 		if sound:
 			pygame.mixer.music.load('muda.mp3')
 			pygame.mixer.music.play()
-		bulletp = next(magazine)
-		if bulletp.ready == False:
-			bulletp.bulletspeed = changesign(player.reverse, bulletp.bulletspeed)
-			bulletp.setstart(player.x, player.y)
-			ready.append(bulletp)
-			ppress = False
+		bulletp = bulletobject(im1,enemy = enemy, origin = player, bulletspeed = -bs)
+		bulletp.bulletspeed = changesign(player.reverse, bulletp.bulletspeed)
+		bulletp.setstart(player.x, player.y)
+		ready.append(bulletp)
+		ppress = False
 	if keys[pygame.K_LSHIFT] and epress == True:
 		if sound:
 			pygame.mixer.music.load('ora.mp3')
 			pygame.mixer.music.play()		
-		bullete = next(emagazine)
-		if bullete.ready == False:
-			bullete.bulletspeed = changesign(enemy.reverse, bullete.bulletspeed)
-			bullete.setstart(enemy.x, enemy.y)
-			ready.append(bullete)
-			epress = False
+		bullete = bulletobject(im2,enemy = player, origin = enemy, bulletspeed = bs)
+		bullete.bulletspeed = changesign(enemy.reverse, bullete.bulletspeed)
+		bullete.setstart(enemy.x, enemy.y)
+		ready.append(bullete)
+		epress = False
 
+	# activate on release
 	if event.type == pygame.KEYUP:
 		if event.key == pygame.K_RSHIFT:
 			ppress = True
 			configcheck = True
 		elif event.key == pygame.K_LSHIFT:
 			epress = True
-		elif configcheck == False and event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_0, pygame.K_F1, pygame.K_F2, pygame.K_F3, pygame.K_F4, pygame.K_F5, pygame.K_F6, pygame.K_F7, pygame.K_F8, pygame.K_F9, pygame.K_F10]:
+		elif configcheck == False and event.key in [pygame.K_x, pygame.K_i, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_0, pygame.K_F1, pygame.K_F2, pygame.K_F3, pygame.K_F4, pygame.K_F5, pygame.K_F6, pygame.K_F7, pygame.K_F8, pygame.K_F9, pygame.K_F10, pygame.K_MINUS, pygame.K_EQUALS, pygame.K_BACKSLASH]:
 			configcheck = True
 
 	update()
