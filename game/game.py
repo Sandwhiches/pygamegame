@@ -39,53 +39,45 @@ lines = True
 short = True
 drawobj = True
 portal = False
-xval = False
 
 class gameobject():
-	def __init__(self, image, x, y, reverse):
-		self.image = image
+	def __init__(self, image, x, y, angle):
 		self.ox = x
 		self.oy = y
 		self.x = x
 		self.y = y
+		self.image = image
+		self.rotated_image = self.image
 		self.ded = False
-		self.orientation = reverse
-		self.reverse = reverse
+		self.angle = angle
 
-	def rotate180(self):
-		self.image = pygame.transform.flip(self.image, False, True)
-		if self.reverse:
-			self.reverse = False
-		else:
-			self.reverse = True
+	def rotateright(self ):
+		self.angle -= 2
+		self.angle %= 360
 
-	def setpos(self, choose, diff):
-		if choose == 0:
-			if diff < 0:
-				if int(self.x) <= bx1:
-					return
-			else:
-				if int(self.x) >= bx2:
-					return
-			self.x += diff
+	def rotateleft(self ):
+		self.angle += 2
+		self.angle %= 360
 
-		else:
-			if diff < 0:
-				if int(self.y) <= by1:
-					return
-			else:
-				if int(self.y) >= by2:
-					return
-			if int(self.y) == 300:
-				self.rotate180()
-			self.y += diff
+	def setpos(self, diff):
+		self.x += diff*(math.cos(math.radians(self.angle)))
+		self.y -= diff*(math.sin(math.radians(self.angle)))
 
 	def updategame(self ):
+		if self.y <= dy[0] or self.y >= dy[1]:
+			if self.y <= dy[0]:
+				self.y = dy[1]
+			else:
+				self.y = dy[0]
+		elif self.x <= dx[0] or self.x >= dx[1]:
+			if self.x <= dx[0]:
+				self.x = dx[1]
+			else:
+				self.x = dx[0]
 		if self.ded == False and drawobj:
-			screen.blit(self.image, (self.x, self.y))
+			self.rotated_image = pygame.transform.rotate(self.image, self.angle)
+			screen.blit(self.rotated_image, (self.x - int(self.rotated_image.get_width()/2), self.y - int(self.rotated_image.get_height()/2)))
 		elif drawobj and self.ded:
-			if self.reverse != self.orientation:
-				self.rotate180()
 			self.ded = False
 			self.x, self.y = self.ox, self.oy
 
@@ -99,6 +91,7 @@ class bulletobject():
 		self.origin = origin
 		self.bulletspeed = bulletspeed
 		self.xbulletspeed = bulletspeed
+		self.angle = self.origin.angle
 		self.ready = False
 
 
@@ -287,8 +280,6 @@ class bulletobject():
 					self.x += dist + 3
 				else:
 					self.x -= dist + 3
-
-		
 		if phase == False: 
 			# deletes bullet and ship
 			if edistance <= 10:
@@ -298,8 +289,8 @@ class bulletobject():
 				ready.remove(self)
 
 	def setstart(self, x, y):
-		self.x = x
-		self.y = y
+		self.x = x - int(self.origin.rotated_image.get_width()/2)
+		self.y = y - int(self.origin.rotated_image.get_height()/2)
 		self.ready = True
 
 	def fire(self):
@@ -326,21 +317,17 @@ class bulletobject():
 
 		if straight:
 			# staight line
-			self.y += self.bulletspeed*delta
-			if xreflect or xval:
-				# just to see how it would move
-				# self.x += changesign((self.xbulletspeed + math.sqrt((math.pow(self.bulletspeed, 2)))), checksign(self.xbulletspeed))
-				self.x += self.xbulletspeed*delta
+			self.y += self.bulletspeed*delta*(math.sin(math.radians(self.angle)))
+			self.x -= self.xbulletspeed*delta*(math.cos(math.radians(self.angle)))
 		if randomy:
 			# random direction
-			self.x = random.randint(- 3, 3) + self.x
-			self.y = random.randint(- 3, 3) + self.y
+			self.x += random.randint(- 3, 3)
+			self.y -= random.randint(- 3, 3)
 
 		self.collisioncheck()
 
 		if drawobj:
 			screen.blit( self.image, (self.x, self.y))
-
 
 
 
@@ -354,9 +341,9 @@ yellow = pygame.transform.scale(pygame.image.load('paper-plane.png'), (25, 25))
 purple = pygame.transform.scale(pygame.image.load('paper-plane - Copy.png'), (25, 25))
 
 # plane
-player = gameobject(yellow, 375, 485, True)
+player = gameobject(yellow, 375, 485, angle = 270)
 # enemy plane
-enemy = gameobject(purple, 375, 115, False)
+enemy = gameobject(purple, 375, 115, angle = 90)
 
 
 
@@ -460,7 +447,7 @@ while run:
 	# updating delta value and setting frame rate
 	delta = clock.tick(60)/1000
 	# updating game configs 
-	text = f'[1]/[x]x, straight: {xval}, {straight}\n[2]random: {randomy}\n[3]enemyavoid: {eavoid}\n[4]playersavoid: {oavoid}\n[5]bulletavoid: {b_avoid}\n[6]bulletfollow: {b_follow}\n[7]enemyfollow: {efollow}\n[8]playerfollow: {pfollow}\n[9]wallborder {wallhax}\n[0]yreflect: {yreflect}\n[F1]xreflect: {xreflect}\n[F2]deflectbullets: {deflect}\n[F3]phasebullets: {phase}\n[F4]/[i]short, lines: {short} {lines}\n[F5]drawobjs: {drawobj}\n[F6]portal: {portal}\n[F7]updatesc: {pyupdate}\n[F8]scoreboard: {scoreswitch}\n[F9]configs: {configuration}\n[F10]soundeffect: {sound}\n[\]exit\n[-]/[+]bulletspd: {round(bs, 1)}\nfps: {round(clock.get_fps(), 2)}, delta: {delta}\nx, y : {int(player.x)}, {int(player.y)}\nlivebullets: {len(ready)}\n'
+	text = f'[1]straight: {straight}\n[2]random: {randomy}\n[3]enemyavoid: {eavoid}\n[4]playersavoid: {oavoid}\n[5]bulletavoid: {b_avoid}\n[6]bulletfollow: {b_follow}\n[7]enemyfollow: {efollow}\n[8]playerfollow: {pfollow}\n[9]wallborder {wallhax}\n[0]yreflect: {yreflect}\n[F1]xreflect: {xreflect}\n[F2]deflectbullets: {deflect}\n[F3]phasebullets: {phase}\n[F4]/[i]short, lines: {short} {lines}\n[F5]drawobjs: {drawobj}\n[F6]portal: {portal}\n[F7]updatesc: {pyupdate}\n[F8]scoreboard: {scoreswitch}\n[F9]configs: {configuration}\n[F10]soundeffect: {sound}\n[\]exit\n[-]/[+]bulletspd: {round(bs, 1)}\nfps: {round(clock.get_fps(), 2)}, delta: {delta}\nx, y : {int(player.x)}, {int(player.y)}\nlivebullets: {len(ready)}\nangle: {player.angle}'
 	# updating color
 	if count % 2 == 0:
 		color = next(colors)
@@ -470,11 +457,7 @@ while run:
 
 	# allows keypresses 1 - K12 to change game settings
 	if configcheck:
-		if keys[pygame.K_x]:
-			xval = not xval
-			configcheck = False
-
-		elif keys[pygame.K_i]:
+		if keys[pygame.K_i]:
 			short = not short
 			configcheck = False
 
@@ -573,36 +556,35 @@ while run:
 
 	# enemy ship - WASD, player ship - arrow keys
 	if  keys[pygame.K_w]:
-		enemy.setpos(1, -150*delta)
+		enemy.setpos(-150*delta)
 
 	if keys[pygame.K_a]:
-		enemy.setpos(0, -150*delta)
-
+		enemy.rotateleft()
+	
 	if keys[pygame.K_s]:
-		enemy.setpos(1, 150*delta)
+		enemy.setpos(150*delta)
 
 	if keys[pygame.K_d]:
-		enemy.setpos(0, 150*delta)
+		enemy.rotateright()
 
 	if  keys[pygame.K_UP]:
-		player.setpos(1, -150*delta)
+		player.setpos(-150*delta)
 
 	if keys[pygame.K_LEFT]:
-		player.setpos(0, -150*delta)
+		player.rotateleft()
 
 	if keys[pygame.K_DOWN]:
-		player.setpos(1, 150*delta)
+		player.setpos(150*delta)
 
 	if keys[pygame.K_RIGHT]:
-		player.setpos(0, 150*delta)
+		player.rotateright()
 
 	# controlling bullets: enemy ship - LEFT SHIFT, player ship - RIGHT SHIFT
 	if keys[pygame.K_RSHIFT] and ppress == True:
 		if sound:
 			pygame.mixer.music.load('muda.mp3')
 			pygame.mixer.music.play()
-		bulletp = bulletobject(im1,enemy = enemy, origin = player, bulletspeed = -bs)
-		bulletp.bulletspeed = changesign(player.reverse, bulletp.bulletspeed)
+		bulletp = bulletobject(im1,enemy = enemy, origin = player, bulletspeed = bs)
 		bulletp.setstart(player.x, player.y)
 		ready.append(bulletp)
 		ppress = False
@@ -611,7 +593,6 @@ while run:
 			pygame.mixer.music.load('ora.mp3')
 			pygame.mixer.music.play()		
 		bullete = bulletobject(im2,enemy = player, origin = enemy, bulletspeed = bs)
-		bullete.bulletspeed = changesign(enemy.reverse, bullete.bulletspeed)
 		bullete.setstart(enemy.x, enemy.y)
 		ready.append(bullete)
 		epress = False
