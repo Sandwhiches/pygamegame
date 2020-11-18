@@ -101,12 +101,13 @@ class bulletobject():
 		# distance to enemy
 		edistance = math.sqrt((math.pow(self.x - self.enemy.x, 2)) + (math.pow(self.y - self.enemy.y, 2)))
 		# distance travelled by a bullet in one frame plus 40
-		dist = (changesign(0, self.bulletspeed) + 70)*delta
+		dist = abs(self.bulletspeed) + 70)*delta
 
 		if len(ready) > 1 and (b_avoid or b_follow or deflect or lines):
 			# distance to next bullet
 			liveb1 = [(i.x , i.y) for i in ready if i != self]
 			liveb2 = [math.sqrt((math.pow(self.x - i[0], 2)) + (math.pow(self.y - i[1], 2))) for i in liveb1]
+			liveb4 = [i for i in ready if i!= self]
 
 			if lines and short:
 			# draws line btw closest bullet
@@ -116,7 +117,7 @@ class bulletobject():
 
 
 			if b_avoid or b_follow or deflect or (lines and not short):
-				for i, j in zip(liveb1, liveb2):
+				for i, j, k in zip(liveb1, liveb2, liveb4):
 					if lines and not short:
 						pygame.draw.line(screen, color, (self.x + 12.5, self.y + 12.5), (i[0] + 12.5, i[1] + 12.5))
 					if b_avoid:
@@ -143,18 +144,19 @@ class bulletobject():
 								self.y += dist
 					if deflect:
 						if j <= 25:
-							if self.x < i[0]:
-								if self.bulletspeed > 0:
-									self.xbulletspeed = -self.xbulletspeed
-							else:
-								if self.xbulletspeed < 0:
-									self.xbulletspeed = -self.xbulletspeed
-							if self.y < i[1]:
-								if self.bulletspeed > 0:
-									self.bulletspeed = -self.bulletspeed
-							else:
-								if self.bulletspeed < 0:
-									self.bulletspeed = -self.bulletspeed
+							# if self.x < i[0]:
+							# 	if self.bulletspeed > 0:
+							# 		self.xbulletspeed = -self.xbulletspeed
+							# else:
+							# 	if self.xbulletspeed < 0:
+							# 		self.xbulletspeed = -self.xbulletspeed
+							# if self.y < i[1]:
+							# 	if self.bulletspeed > 0:
+							# 		self.bulletspeed = -self.bulletspeed
+							# else:
+							# 	if self.bulletspeed < 0:
+							# 		self.bulletspeed = -self.bulletspeed
+							self.angle = abs(self.angle - k.angle)
 
 		if yreflect:
 			# bullets reflect at y boundary
@@ -331,11 +333,6 @@ class bulletobject():
 
 
 
-# setting parameters for both ships
-bx1 = 0
-bx2 = 775
-by1 = 0
-by2 = 575
 
 yellow = pygame.transform.scale(pygame.image.load('paper-plane.png'), (25, 25))
 purple = pygame.transform.scale(pygame.image.load('paper-plane - Copy.png'), (25, 25))
@@ -399,19 +396,6 @@ def score():
 	else:
 		ppoint += 1
 
-# makes sure an integer is negative or positive
-def changesign(check, val):
-	if check:
-		if val < 0:
-			pass
-		else:
-			val = -val
-	else:
-		if val > 0:
-			pass
-		else:
-			val = -val
-	return val
 
 def checksign(check):
 	if check > 0:
