@@ -101,7 +101,7 @@ class bulletobject():
 		# distance to enemy
 		edistance = math.sqrt((math.pow(self.x - self.enemy.x, 2)) + (math.pow(self.y - self.enemy.y, 2)))
 		# distance travelled by a bullet in one frame plus 40
-		dist = abs(self.bulletspeed) + 70)*delta
+		dist = abs(self.bulletspeed)*delta
 
 		if len(ready) > 1 and (b_avoid or b_follow or deflect or lines):
 			# distance to next bullet
